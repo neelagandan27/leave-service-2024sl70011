@@ -45,6 +45,8 @@ public class Main {
         return server;
     }
 
+static HttpServer server;
+
     public static void main(String[] args) throws IOException {
         String environment =
                 System.getenv().getOrDefault("APP_ENV", "development");

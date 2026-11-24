@@ -42,4 +42,33 @@ public class MainTest {
             server.stop(0);
         }
     }
+
+    @Test
+public void testMainStartsServer() throws Exception {
+    Main.main(new String[]{"0"});
+
+    try {
+        assertTrue(Main.server.isRunning());
+
+        int port = Main.server.getAddress().getPort();
+
+        URL url = new URL("http://localhost:" + port + "/");
+        HttpURLConnection connection =
+                (HttpURLConnection) url.openConnection();
+
+        assertEquals(200, connection.getResponseCode());
+
+        String response = new String(
+                connection.getInputStream().readAllBytes(),
+                StandardCharsets.UTF_8);
+
+        assertTrue(response.contains("Environment: development"));
+        assertTrue(response.contains("Remaining Leaves: 15"));
+
+        connection.disconnect();
+    } finally {
+        Main.server.stop(0);
+        Main.server = null;
+    }
+}
 }
