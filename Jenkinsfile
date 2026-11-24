@@ -6,6 +6,11 @@ pipeline {
         skipDefaultCheckout(true)
     }
 
+    environment {
+        DOCKER_IMAGE = 'leave-service:1.0'
+        CONTAINER_NAME = 'leave-service-staging'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -18,7 +23,6 @@ pipeline {
             steps {
                 sh 'mvn clean verify'
             }
-
             post {
                 always {
                     junit '**/target/surefire-reports/*.xml'
@@ -46,6 +50,31 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build -t $DOCKER_IMAGE .
+                '''
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                sh '''
+                    docker rm -f $CONTAINER_NAME || true
+
+                    docker run -d \
+                        --name $CONTAINER_NAME \
+                        -e APP_ENV=staging \
+                        -p 8085:8080 \
+                        $DOCKER_IMAGE
+
+                    sleep 5
+
+                    curl --fail http://localhost:8085
+                '''
+            }
+        }
     }
 }
-
