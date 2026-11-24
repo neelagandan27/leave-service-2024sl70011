@@ -31,7 +31,7 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        mvn sonar:sonar \
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
                         -Dsonar.projectKey=leave-service-2024sl70011 \
                         -Dsonar.host.url=http://localhost:9000 \
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
@@ -42,3 +42,4 @@ pipeline {
         }
     }
 }
+       
