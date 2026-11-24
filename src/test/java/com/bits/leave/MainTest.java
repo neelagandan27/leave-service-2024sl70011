@@ -48,7 +48,7 @@ public void testMainStartsServer() throws Exception {
     Main.main(new String[]{"0"});
 
     try {
-        assertTrue(Main.server.isRunning());
+        assertTrue(Main.server != null);
 
         int port = Main.server.getAddress().getPort();
 

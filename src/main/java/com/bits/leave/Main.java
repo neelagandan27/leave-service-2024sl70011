@@ -1,3 +1,4 @@
+
 package com.bits.leave;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -8,13 +9,15 @@ import java.nio.charset.StandardCharsets;
 
 public class Main {
 
+    static HttpServer server;
+
     static HttpServer createServer(int port, String environment)
             throws IOException {
 
-        HttpServer server = HttpServer.create(
+        HttpServer httpServer = HttpServer.create(
                 new InetSocketAddress("0.0.0.0", port), 0);
 
-        server.createContext("/", (HttpExchange exchange) -> {
+        httpServer.createContext("/", (HttpExchange exchange) -> {
             int remainingLeaves =
                     LeaveCalculator.calculateLeaveBalance(20, 5);
 
@@ -42,19 +45,21 @@ public class Main {
             }
         });
 
-        return server;
+        return httpServer;
     }
-
-static HttpServer server;
 
     public static void main(String[] args) throws IOException {
         String environment =
                 System.getenv().getOrDefault("APP_ENV", "development");
 
-        HttpServer server = createServer(8080, environment);
+        int port = args.length > 0
+                ? Integer.parseInt(args[0]) : 8080;
+
+        server = createServer(port, environment);
         server.start();
 
-        System.out.println("Employee Leave Service running on port 8080");
+        System.out.println(
+                "Employee Leave Service running on port " + port);
         System.out.println("Environment: " + environment);
     }
 }
